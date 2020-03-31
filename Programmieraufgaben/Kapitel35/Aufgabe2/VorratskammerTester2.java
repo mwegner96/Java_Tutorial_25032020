@@ -47,6 +47,9 @@ class Vorratskammer {
 	private Marmelade glas2;
 	private Marmelade glas3;
 	private Marmelade glasAusgewaehlt;
+	private boolean istLeer1 = false;
+	private boolean istLeer2 = false;
+	private boolean istLeer3 = false;
 
 	// Konstruktor
 	public Vorratskammer(Marmelade glas1, Marmelade glas2, Marmelade glas3) {
@@ -56,82 +59,94 @@ class Vorratskammer {
 		glasAusgewaehlt = null;
 	}
 
+	public Vorratskammer(Marmelade glas1, Marmelade glas2) {
+		this.glas1 = glas1;
+		this.glas2 = glas2;
+		this.glas3 = null;
+		glasAusgewaehlt = null;
+	}
+
+	public Vorratskammer(Marmelade glas1) {
+		this.glas1 = glas1;
+		this.glas2 = null;
+		this.glas3 = null;
+		glasAusgewaehlt = null;
+	}
+
 	// Methoden
 	public void ausgeben() {
 		System.out.println("Die Vorratskammer enthaelt:");
+		if (glas1 != null) {
 		System.out.print("1: ");
-		glas1.ausgeben();
+			glas1.ausgeben();
+		}
+		if (glas2 != null) {
 		System.out.print("2: ");
-		glas2.ausgeben();
+			glas2.ausgeben();
+		}
+		if (glas3 != null) {
 		System.out.print("3: ");
-		glas3.ausgeben();
+			glas3.ausgeben();
+		}
 	}
 
 	// wir setzen voraus, dass der Anwender eine richtige Auswahl trifft, 1, 2, oder
 	// 3
-	public void auswaehlen(int glasNummer) {
-		if (glasNummer == 1)
-			glasAusgewaehlt = glas1;
-
-		else if (glasNummer == 2)
-			glasAusgewaehlt = glas2;
-
-		else
-			glasAusgewaehlt = glas3;
+	public boolean auswaehlen(int glasNummer) {
+		if (glasNummer == 1) {
+			if (glas1 != null) {
+				glasAusgewaehlt = glas1;
+			} else {
+				istLeer1 = true;
+				return istLeer1;
+			}
+		} else {
+			if (glasNummer == 2) {
+				if (glas2 != null) {
+					glasAusgewaehlt = glas2;
+				} else {
+					istLeer2 = true;
+					return istLeer2;
+				}
+			} else {
+				if (glas3 != null) {
+					glasAusgewaehlt = glas3;
+				} else {
+					istLeer3 = true;
+					return istLeer3;
+				}
+			}
+		}
+		return false;
 	}
 
 	// Auftragen der ausgewählten Marmelade
 	public void auftragen(int unzen) {
-		glasAusgewaehlt.auftragen(unzen);
+		if (glasAusgewaehlt != null) {
+			glasAusgewaehlt.auftragen(unzen);
+		}
 	}
 }
 
-class VorratskammerTester {
+class VorratskammerTester2 {
 	public static void main(String[] args) {
 		Marmelade stachelbeer = new Marmelade("Stachelbeer", "04.07.09", 12);
-		Marmelade erdbeer = new Marmelade("Erdbeer", "30.09.10", 8);
-		Marmelade aprikosen = new Marmelade("Aprikosen", "31.10.10", 3);
-		Scanner scan = new Scanner(System.in);
-		int auswahl, menge = 0;
+		Marmelade erdbeer = new Marmelade("Erdbeer", "31.09.10", 8);
 
-		Vorratskammer vorrat = new Vorratskammer(stachelbeer, erdbeer, aprikosen);
+		Vorratskammer vorrat = new Vorratskammer(stachelbeer, erdbeer);
+		vorrat.ausgeben();
 
-		do {
-			vorrat.ausgeben();
+		if (vorrat.auswaehlen(1))
+			vorrat.auftragen(2);
+		else
+			System.out.println("Auswahl nicht verfuegbar");
+		vorrat.ausgeben();
 
-			do {
-				System.out.print("Treffen Sie Ihre Auswahl (1, 2 oder 3). Exit -1: ");
-				auswahl = scan.nextInt();
+		if (vorrat.auswaehlen(3))
+			vorrat.auftragen(2);
+		else
+			System.out.println("Auswahl nicht verfuegbar");
+		vorrat.ausgeben();
 
-				if (auswahl == 1 || auswahl == 2 || auswahl == 3) {
-					vorrat.auswaehlen(auswahl);
-				} else {
-					if (auswahl == -1) {
-						System.out.println("Good-bye");
-					} else {
-						System.out.println("Falsche Eingabe!");
-						System.out.println();
-					}
-				}
-
-			} while (auswahl != 1 && auswahl != 2 && auswahl != 3 && auswahl != -1);
-
-			if (auswahl != -1) {
-				do {
-
-					System.out.print("Geben Sie die Menge ein, die aufgetragen werden soll: ");
-					menge = scan.nextInt();
-
-					if (menge >= 0) {
-						vorrat.auftragen(menge);
-					} else {
-						System.out.println("Menge darf nicht < 0 sein!");
-						System.out.println();
-					}
-
-				} while (menge < 0);
-			}
-
-		} while (auswahl != -1);
 	}
 }
