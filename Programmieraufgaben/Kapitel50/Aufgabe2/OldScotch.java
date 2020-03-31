@@ -5,7 +5,7 @@ class Artikel {
 
 	private int artikelNr, lagerzeit;
 	private String bezeichnung = new String();
-	private double einkaufspreis, verkaufspreis;;
+	private double einkaufspreis;
 	final double HANDELSSPANNE = 0.6; // 60 Prozent des Einkaufspreises
 	final double MWST = 0.19; // 19 Prozent
 
@@ -17,16 +17,50 @@ class Artikel {
 	}
 
 	public void anzeigen() {
+		
 		System.out.println("Artikelnr.: " + artikelNr + " | Bezeichnung: " + bezeichnung + " | Einkaufspreis: "
-				+ einkaufspreis + " | Verkaufspreis: " + berechneVerkaufspreis() + " | Lagerzeit: " + lagerzeit);
+				+ einkaufspreis + " Euro | Verkaufspreis: " + berechneVerkaufspreis() + " Euro | Lagerzeit: " + lagerzeit);
+		System.out.println();
 	}
 
 	public double berechneVerkaufspreis() {
-		verkaufspreis = (einkaufspreis * (1 + HANDELSSPANNE)) * (1 + MWST);
+		double verkaufspreis = (einkaufspreis * (1 + HANDELSSPANNE)) * (1 + MWST);
 
 		return verkaufspreis;
 	}
+	
+	public double getEinkauf()
+	{
+		return einkaufspreis;
+	}
 
+}
+
+class Sonderposten extends Artikel {
+	private double rabatt;
+
+	Sonderposten(int artikelNum, String bez, double preis, int lager) {
+		super(artikelNum, bez, preis, lager);
+
+		if (lager > 12) {
+			this.rabatt = 0.30;
+		} else {
+			this.rabatt = 0.10;
+		}
+	}
+
+	public void anzeigen() {
+		System.out.println("Sonderposten: ");
+		super.anzeigen();
+		System.out.println(
+				"(VK <alt>: " + berechneVerkaufspreis() / (100 - (rabatt*100)) * 100 + " Euro | Rabatt" + rabatt * 100 + "%)");
+	}
+
+	public double berechneVerkaufspreis() {
+		double verkaufspreis = (super.getEinkauf() * (1 + HANDELSSPANNE)) * (1 + MWST) * (1-rabatt);
+
+		return verkaufspreis;
+	}
 }
 
 class OldScotch {
@@ -58,6 +92,8 @@ class OldScotch {
 
 		System.out.print("Geben Sie die Lagerzeit ein: ");
 		lagerzeit = scan.nextInt();
+		
+		System.out.println();
 	}
 
 	public static void main(String[] args) {
@@ -66,10 +102,10 @@ class OldScotch {
 		Artikel art1 = new Artikel(artikelnr, str, ekpreis, lagerzeit);
 
 		eingabe();
-		Artikel art2 = new Artikel(artikelnr, str, ekpreis, lagerzeit);
+		Sonderposten sonder1 = new Sonderposten(artikelnr, str, ekpreis, lagerzeit);
 
 		art1.anzeigen();
-		art2.anzeigen();
+		sonder1.anzeigen();
 
 	}
 }
